@@ -77,7 +77,7 @@ int main(const int argc, const char *argv[]) {
     const int operationcount = stoi(props.GetProperty(CoreWorkload::OPERATION_COUNT_PROPERTY, "1000"));
     const float insert_ratio = stof(props.GetProperty(CoreWorkload::INSERT_PROPORTION_PROPERTY, "0"));
 
-    ycsbc::CoreWorkload wl(filename, insertstart + recordcount + operationcount * insert_ratio);
+    ycsbc::CoreWorkload wl(filename, insertstart + recordcount + operationcount * (insert_ratio + 0.1));
     wl.Init(props);
     
     // generate load
