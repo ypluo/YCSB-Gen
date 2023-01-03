@@ -23,8 +23,37 @@
 
 namespace ycsbc {
 
-#define DEBUG 
-typedef uint64_t _key_t;
+using _key_t = uint64_t;
+
+struct StringKey {
+  const int KEY_SIZE = 16;
+  std::string str_;
+
+  void operator=(std::string s) {
+    str_ = s;
+  } 
+
+  void operator=(uint64_t u) {
+    char buf[KEY_SIZE + 1];
+    sprintf(buf, "%0*lu", KEY_SIZE, u);
+    str_ = std::string(buf, KEY_SIZE);
+  }
+
+  void operator=(int64_t i) {
+    *this = (uint64_t) i;
+  }
+
+  void operator=(double d) {
+    char buf[KEY_SIZE + 1];
+    sprintf(buf, "%0*lf", KEY_SIZE, d);
+    str_ = std::string(buf, KEY_SIZE);
+  }
+
+  void operator=(float f) {
+    *this = (double) f;
+  }
+};
+
 const uint64_t KEYSET_SCALE_DEFAULT = (uint64_t) 128 * 1024 * 1024;
 
 enum Operation {
@@ -158,21 +187,20 @@ class CoreWorkload {
 inline std::string CoreWorkload::NextSequenceKey() {
   uint64_t seq_id_ = key_generator_->Next();
   insert_key_sequence_.Next();
-  _key_t key;
+  StringKey key;
 
   if(from_file_) {
     assert(seq_id_ < max_seq_id_);
     key = keys_[seq_id_];       // a key from given dataset
   } else {
     #ifdef DEBUG
-      key = seq_id_;
+      key = myseq_id_;
     #else
       key = utils::Hash(seq_id_); // a random distributed key
     #endif
   }
 
-  std::string key_str = std::to_string(key);
-  return key_str;
+  return key.str_;
 }
 
 inline std::string CoreWorkload::NextTransactionKey() {
@@ -181,7 +209,7 @@ inline std::string CoreWorkload::NextTransactionKey() {
     seq_id_ = key_chooser_->Next();
   } while (seq_id_ > key_generator_->Last());
   
-  _key_t key;
+  StringKey key;
   if(from_file_) {
     assert(seq_id_ < max_seq_id_);
     key = keys_[seq_id_];        // a key from given dataset
@@ -193,8 +221,7 @@ inline std::string CoreWorkload::NextTransactionKey() {
     #endif
   }
 
-  std::string key_str = std::to_string(key);
-  return key_str;
+  return key.str_;
 }
   
 } // ycsbc
