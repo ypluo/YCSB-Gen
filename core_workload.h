@@ -26,7 +26,7 @@ namespace ycsbc {
 using _key_t = uint64_t;
 
 struct StringKey {
-  const int KEY_SIZE = 16;
+  const int KEY_SIZE = 19;
   std::string str_;
 
   void operator=(std::string s) {
