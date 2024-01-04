@@ -19,12 +19,15 @@
 using namespace std;
 using namespace ycsbc;
 
+bool query_only = false;
+
 void UsageMessage(const char *command)  {
     cout << "Usage: " << command << " [options]" << endl;
     cout << "Options:" << endl;
     cout << "-P propertyfile: load properties from the given file. Multiple files can" << endl;
     cout << "                 be specified, and will be processed in the order specified" << endl;
     cout << "-F datasetfile:  using keys from a given file" << endl;
+    cout << "--query_only: do not generate dataset file" << endl;
 }
 
 void ParseCommandLine(int argc, const char *argv[], utils::Properties &props) {
@@ -55,6 +58,10 @@ void ParseCommandLine(int argc, const char *argv[], utils::Properties &props) {
             props.SetProperty("dataset_file", argv[argindex]);
             argindex++;
         } 
+        else if (strcmp(argv[argindex], "--query_only") == 0) {
+            argindex++;
+            query_only = true;
+        } 
         else {
             cout << "Unknown option '" << argv[argindex] << "'" << endl;
             exit(0);
@@ -81,12 +88,20 @@ int main(const int argc, const char *argv[]) {
     wl.Init(props);
     
     // generate load
-    BasicDB db_load("dataset.dat");
     std::string key;
     std::vector<KVPair> values;
-    for(int i = 0; i < recordcount; i++) {
-        key = wl.NextSequenceKey();
-        db_load.Insert(key, values);
+    // generate load
+    if(query_only == false) {
+        BasicDB db_load("dataset.dat");
+        for(int i = 0; i < recordcount; i++) {
+            key = wl.NextSequenceKey();
+            db_load.Insert(key, values);
+        }
+    } else {
+        // do not generate a dataset file
+        for(int i = 0; i < recordcount; i++) {
+            key = wl.NextSequenceKey();
+        }
     }
 
     // generate query workload
