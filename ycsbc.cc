@@ -120,7 +120,7 @@ int main(const int argc, const char *argv[]) {
                 db_txn.Update(key, values);
                 break;
             case INSERT:
-                key = wl.NextSequenceKey();
+                key = wl.NextSequenceKey(true);
                 db_txn.Insert(key, values);
                 break;
             case SCAN:

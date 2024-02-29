@@ -81,7 +81,7 @@ void CoreWorkload::Init(const utils::Properties &p) {
                                             SCAN_LENGTH_DISTRIBUTION_DEFAULT);
 
   key_generator_ = new CounterGenerator(insert_start);
-  insert_key_sequence_.Set(std::max(3, insert_start));
+  insert_key_sequence_.Set(record_count_);
 
   op_chooser_.Clear(); // before initializing each portion
   if (read_proportion > 0) {

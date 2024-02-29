@@ -132,7 +132,7 @@ class CoreWorkload {
   ///
   virtual void Init(const utils::Properties &p);
   
-  virtual std::string NextSequenceKey(); /// Used for loading data
+  virtual std::string NextSequenceKey(bool query); /// Used for loading data
   virtual std::string NextTransactionKey(); /// Used for transactions
   virtual Operation NextOperation() { return op_chooser_.Next(); }
   virtual size_t NextScanLength() { return scan_len_chooser_->Next(); }
@@ -184,9 +184,9 @@ class CoreWorkload {
   std::vector<_key_t> keys_;
 };
 
-inline std::string CoreWorkload::NextSequenceKey() {
+inline std::string CoreWorkload::NextSequenceKey(bool query = false) {
   uint64_t seq_id_ = key_generator_->Next();
-  insert_key_sequence_.Next();
+  if(query == true) insert_key_sequence_.Next();
   StringKey key;
 
   if(from_file_) {

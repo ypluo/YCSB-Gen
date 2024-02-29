@@ -68,7 +68,7 @@ void Stage(ycsbc::CoreWorkload & wl, ycsbc::BasicDB & db, int opcount) {
                 db.Read(key, result);
                 break;
             case INSERT:
-                key = wl.NextSequenceKey();
+                key = wl.NextSequenceKey(true);
                 db.Insert(key, values);
                 break;
             default:
